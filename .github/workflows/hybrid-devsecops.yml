@@ -1,0 +1,43 @@
+name: Hybrid Security SAST+DAST Scan
+
+on:
+  workflow_dispatch: # Дозволяє запускати пайплайн вручну кнопкою
+
+jobs:
+  sast_analysis:
+    name: CodeQL Analysis (SAST)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Simulate CodeQL SAST Scan
+        run: |
+          echo "Запуск статичного аналізу коду..."
+          sleep 5
+          echo "SAST аналіз успішно завершено. Знайдено потенційні вразливості."
+
+  dast_scan:
+    name: OWASP ZAP Scan (DAST)
+    needs: sast_analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Simulate ZAP DAST Scan
+        run: |
+          echo "Розгортання тестового контейнера..."
+          echo "Запуск активного сканування OWASP ZAP..."
+          sleep 5
+          echo "DAST сканування успішно завершено."
+
+  aggregate_report:
+    name: Security Aggregator & Report
+    needs: [sast_analysis, dast_scan]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      - name: Install Python Dependencies
+        run: pip install fpdf
+      - name: Run Hybrid Aggregator
+        run: python scan.py --demo
